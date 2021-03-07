@@ -13,6 +13,10 @@ import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadsModule } from './uploads/uploads.module';
 
+import { User } from './users/entites/user.entity';
+import { Address } from './users/entites/address.entity';
+import { JwtModule } from './jwt/jwt.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,7 +32,12 @@ import { UploadsModule } from './uploads/uploads.module';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
       }),
+    }),
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+      context: ({ req }) => ({ token: req.headers['x-jwt'] }),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -37,11 +46,11 @@ import { UploadsModule } from './uploads/uploads.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [],
+      entities: [User, Address],
       synchronize: true,
     }),
-    GraphQLModule.forRoot({
-      autoSchemaFile: true,
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
     }),
     UsersModule,
     CafesModule,
