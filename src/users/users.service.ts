@@ -6,7 +6,7 @@ import {
   CreateAccountInput,
   CreateAccountOutput,
 } from './dtos/create-account.dto';
-import { Address } from './entites/address.entity';
+import { Address } from '../common/entites/address.entity';
 import { User } from './entites/user.entity';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { JwtService } from 'src/jwt/jwt.service';
@@ -115,16 +115,16 @@ export class UserService {
       if (!user) {
         return this.errorMsg('존재하지 않는 유저입니다.');
       }
-      if (user.address) {
-        await this.addressRepository.remove(user.address);
-      }
+      // if (user.address) {
+      //   await this.addressRepository.remove(user.address);
+      // }
       await this.usersRepository.remove(user);
       return {
         ok: true,
       };
     } catch (e) {
       console.log(e);
-      return this.errorMsg('계정을 삭제에 실패하였습니다.');
+      return this.errorMsg('계정 삭제에 실패하였습니다.');
     }
   }
 

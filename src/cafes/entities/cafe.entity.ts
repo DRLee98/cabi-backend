@@ -1,0 +1,81 @@
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { CoreEntity } from '../../common/entites/core.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+import { Address } from '../../common/entites/address.entity';
+import { IsString } from 'class-validator';
+import { User } from '../../users/entites/user.entity';
+import { Keyword } from './keyword.entity';
+import { Review } from './review.entity';
+import { Rating } from './rating.entity';
+import { Menu } from './menu.entity';
+
+@InputType('CafeInputType', { isAbstract: true })
+@ObjectType()
+@Entity()
+export class Cafe extends CoreEntity {
+  @Column()
+  @Field((type) => String)
+  @IsString()
+  name: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  description?: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  coverImg?: string;
+
+  @OneToOne((type) => Address, (address) => address.cafe, {
+    eager: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => Address)
+  address: Address;
+
+  @ManyToMany((type) => Keyword, (keyword) => keyword.cafes, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    eager: true,
+  })
+  @JoinTable()
+  @Field((type) => [Keyword], { nullable: true })
+  keywords?: Keyword[];
+
+  @ManyToOne((type) => User, (user) => user.cafes, { onDelete: 'CASCADE' })
+  @Field((type) => User)
+  owner: User;
+
+  @OneToMany((type) => Menu, (menu) => menu.cafe, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    eager: true,
+  })
+  @Field((type) => [Menu], { nullable: true })
+  menus?: Menu[];
+
+  @OneToMany((type) => Review, (review) => review.cafe, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => [Review], { nullable: true })
+  reviews?: Review[];
+
+  @OneToMany((type) => Rating, (rating) => rating.cafe, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    eager: true,
+  })
+  @Field((type) => [Rating], { nullable: true })
+  ratings?: Rating[];
+}

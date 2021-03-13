@@ -5,18 +5,21 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { CoreEntity } from 'src/common/entites/core.entity';
+import { CoreEntity } from '../../common/entites/core.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
-import { Address } from './address.entity';
+import { Address } from '../../common/entites/address.entity';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { Cafe } from '../../cafes/entities/cafe.entity';
+import { Review } from '../../cafes/entities/review.entity';
 
 export enum UserRole {
   Owner = 'Owner',
@@ -54,9 +57,26 @@ export class User extends CoreEntity {
   @IsString()
   profileImg?: string;
 
-  @OneToOne((type) => Address, { eager: true, onDelete: 'SET NULL' })
-  @JoinColumn()
+  @OneToOne((type) => Address, (address) => address.user, {
+    eager: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => Address)
   address: Address;
+
+  @OneToMany((type) => Cafe, (cafe) => cafe.owner, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => [Cafe], { nullable: true })
+  cafes?: Cafe[];
+
+  @OneToMany((type) => Review, (review) => review.writer, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => [Review], { nullable: true })
+  review?: Review[];
 
   @BeforeInsert()
   @BeforeUpdate()

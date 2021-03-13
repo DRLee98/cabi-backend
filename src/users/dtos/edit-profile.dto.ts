@@ -6,7 +6,7 @@ import {
   PickType,
 } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { Address } from '../entites/address.entity';
+import { Address } from '../../common/entites/address.entity';
 import { User } from '../entites/user.entity';
 
 @InputType()
