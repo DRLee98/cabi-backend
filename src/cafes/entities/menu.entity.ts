@@ -1,10 +1,11 @@
 import {
   Field,
   InputType,
+  Int,
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entites/core.entity';
 import {
   Column,
@@ -39,7 +40,17 @@ export class Menu extends CoreEntity {
   @Column()
   @Field((type) => String)
   @IsString()
-  menuImg: string;
+  description: string;
+
+  @Column()
+  @Field((type) => Int)
+  @IsInt()
+  price: number;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  menuImg?: string;
 
   @Column({ type: 'enum', enum: Category })
   @Field((type) => Category)
@@ -51,7 +62,6 @@ export class Menu extends CoreEntity {
   cafe: Cafe;
 
   @OneToOne((type) => Nutrient, (nutrient) => nutrient.menu, {
-    eager: true,
     onDelete: 'SET NULL',
     nullable: true,
   })

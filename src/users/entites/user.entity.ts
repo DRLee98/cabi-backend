@@ -14,6 +14,7 @@ import {
   JoinColumn,
   OneToMany,
   OneToOne,
+  RelationId,
 } from 'typeorm';
 import { Address } from '../../common/entites/address.entity';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -70,6 +71,9 @@ export class User extends CoreEntity {
   })
   @Field((type) => [Cafe], { nullable: true })
   cafes?: Cafe[];
+
+  @RelationId((user: User) => user.cafes)
+  cafesId: number[];
 
   @OneToMany((type) => Review, (review) => review.writer, {
     nullable: true,

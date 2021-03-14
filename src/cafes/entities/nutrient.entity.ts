@@ -8,58 +8,61 @@ import { Menu } from './menu.entity';
 @ObjectType()
 @Entity()
 export class Nutrient extends CoreEntity {
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  volume: number;
+  volume?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  calorie: number;
+  calorie?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  salt: number;
+  salt?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  carbohydrate: number;
+  carbohydrate?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  sugars: number;
+  sugars?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  fat: number;
+  fat?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  transFat: number;
+  transFat?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  saturatedFat: number;
+  saturatedFat?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  cholesterol: number;
+  cholesterol?: number;
 
-  @Column()
-  @Field((type) => Int)
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
   @IsInt()
-  protein: number;
+  protein?: number;
 
-  @OneToOne((type) => Menu, (menu) => menu.nutrient, { onDelete: 'CASCADE' })
+  @OneToOne((type) => Menu, (menu) => menu.nutrient, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   @JoinColumn()
-  @Field((type) => Menu)
-  menu: Menu;
+  @Field((type) => Menu, { nullable: true })
+  menu?: Menu;
 }

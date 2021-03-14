@@ -13,6 +13,7 @@ import { JwtService } from 'src/jwt/jwt.service';
 import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { DeleteAccountOutput } from './dtos/delete-account.dto';
+import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class UserService {
@@ -22,11 +23,8 @@ export class UserService {
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,
     private readonly jwtService: JwtService,
+    private readonly commonService: CommonService,
   ) {}
-
-  errorMsg(msg: string): CoreOutput {
-    return { ok: false, error: msg };
-  }
 
   async findById(id: number): Promise<User> {
     return await this.usersRepository.findOne(id);
@@ -42,7 +40,7 @@ export class UserService {
     try {
       const findEmail = await this.usersRepository.findOne({ email });
       if (findEmail) {
-        return this.errorMsg('이미 가입된 이메일입니다.');
+        return this.commonService.errorMsg('이미 가입된 이메일입니다.');
       }
       const user = this.usersRepository.create({
         name,
@@ -60,7 +58,7 @@ export class UserService {
       };
     } catch (e) {
       console.log(e);
-      return this.errorMsg('error');
+      return this.commonService.InternalServerErrorOutput;
     }
   }
 
@@ -68,11 +66,11 @@ export class UserService {
     try {
       const user = await this.usersRepository.findOne({ email });
       if (!user) {
-        return this.errorMsg('존재하지 않는 유저입니다.');
+        return this.commonService.errorMsg('존재하지 않는 유저입니다.');
       }
       const passwordCheck = await user.comparePassword(password);
       if (!passwordCheck) {
-        return this.errorMsg('비밀번호가 틀립니다.');
+        return this.commonService.errorMsg('비밀번호가 틀립니다.');
       }
       const token = this.jwtService.sign(user.id);
       return {
@@ -81,7 +79,7 @@ export class UserService {
       };
     } catch (e) {
       console.log(e);
-      return this.errorMsg('error');
+      return this.commonService.InternalServerErrorOutput;
     }
   }
 
@@ -106,25 +104,22 @@ export class UserService {
       };
     } catch (e) {
       console.log(e);
-      return this.errorMsg('error');
+      return this.commonService.InternalServerErrorOutput;
     }
   }
 
   async deleteAccount(user: User): Promise<DeleteAccountOutput> {
     try {
       if (!user) {
-        return this.errorMsg('존재하지 않는 유저입니다.');
+        return this.commonService.errorMsg('존재하지 않는 유저입니다.');
       }
-      // if (user.address) {
-      //   await this.addressRepository.remove(user.address);
-      // }
       await this.usersRepository.remove(user);
       return {
         ok: true,
       };
     } catch (e) {
       console.log(e);
-      return this.errorMsg('계정 삭제에 실패하였습니다.');
+      return this.commonService.InternalServerErrorOutput;
     }
   }
 
@@ -132,7 +127,7 @@ export class UserService {
     try {
       const user = await this.usersRepository.findOne(id);
       if (!user) {
-        return this.errorMsg('존재하지 않는 유저입니다.');
+        return this.commonService.errorMsg('존재하지 않는 유저입니다.');
       }
       return {
         ok: true,
@@ -140,7 +135,7 @@ export class UserService {
       };
     } catch (e) {
       console.log(e);
-      return this.errorMsg('error');
+      return this.commonService.InternalServerErrorOutput;
     }
   }
 }

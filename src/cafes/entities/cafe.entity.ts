@@ -26,10 +26,10 @@ export class Cafe extends CoreEntity {
   @IsString()
   name: string;
 
-  @Column({ nullable: true })
-  @Field((type) => String, { nullable: true })
+  @Column()
+  @Field((type) => String)
   @IsString()
-  description?: string;
+  description: string;
 
   @Column({ nullable: true })
   @Field((type) => String, { nullable: true })
@@ -52,14 +52,16 @@ export class Cafe extends CoreEntity {
   @Field((type) => [Keyword], { nullable: true })
   keywords?: Keyword[];
 
-  @ManyToOne((type) => User, (user) => user.cafes, { onDelete: 'CASCADE' })
+  @ManyToOne((type) => User, (user) => user.cafes, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   @Field((type) => User)
   owner: User;
 
   @OneToMany((type) => Menu, (menu) => menu.cafe, {
     nullable: true,
     onDelete: 'SET NULL',
-    eager: true,
   })
   @Field((type) => [Menu], { nullable: true })
   menus?: Menu[];
