@@ -17,6 +17,8 @@ import {
 } from 'typeorm';
 import { Cafe } from './cafe.entity';
 import { Nutrient } from './nutrient.entity';
+import { Rating } from './rating.entity';
+import { Review } from './review.entity';
 
 enum Category {
   Beverage = 'Beverage',
@@ -76,4 +78,19 @@ export class Menu extends CoreEntity {
   @Field((type) => [Option], { nullable: true })
   options?: Option[];
   */
+
+  @OneToMany((type) => Review, (review) => review.cafe, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => [Review], { nullable: true })
+  reviews?: Review[];
+
+  @OneToMany((type) => Rating, (rating) => rating.cafe, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    eager: true,
+  })
+  @Field((type) => [Rating], { nullable: true })
+  ratings?: Rating[];
 }

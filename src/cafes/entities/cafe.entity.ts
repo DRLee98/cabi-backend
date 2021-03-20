@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CoreEntity } from '../../common/entites/core.entity';
 import {
   Column,
@@ -10,7 +10,7 @@ import {
   OneToOne,
 } from 'typeorm';
 import { Address } from '../../common/entites/address.entity';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { User } from '../../users/entites/user.entity';
 import { Keyword } from './keyword.entity';
 import { Review } from './review.entity';
@@ -80,4 +80,14 @@ export class Cafe extends CoreEntity {
   })
   @Field((type) => [Rating], { nullable: true })
   ratings?: Rating[];
+
+  @Column({ default: 0 })
+  @Field((type) => Int)
+  @IsNumber()
+  totalScore: number;
+
+  @Column({ default: 0 })
+  @Field((type) => Int)
+  @IsNumber()
+  avgScore: number;
 }

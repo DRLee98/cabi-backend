@@ -5,5 +5,5 @@ import { Cafe } from '../entities/cafe.entity';
 @ObjectType()
 export class SeeCafeOutput extends CoreOutput {
   @Field((type) => [Cafe], { nullable: true })
-  cafe?: Cafe[];
+  cafes?: Cafe[];
 }

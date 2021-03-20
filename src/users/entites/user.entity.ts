@@ -21,6 +21,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
 import { Cafe } from '../../cafes/entities/cafe.entity';
 import { Review } from '../../cafes/entities/review.entity';
+import { Reply } from 'src/cafes/entities/reply.entity';
 
 export enum UserRole {
   Owner = 'Owner',
@@ -81,6 +82,13 @@ export class User extends CoreEntity {
   })
   @Field((type) => [Review], { nullable: true })
   review?: Review[];
+
+  @OneToMany((type) => Reply, (reply) => reply.writer, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => [Reply], { nullable: true })
+  reply?: Reply[];
 
   @BeforeInsert()
   @BeforeUpdate()

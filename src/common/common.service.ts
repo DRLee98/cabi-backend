@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { User } from 'src/users/entites/user.entity';
 import { CoreOutput } from './dtos/output.dto';
 
 @Injectable()
@@ -10,5 +11,19 @@ export class CommonService {
 
   errorMsg(msg: string): CoreOutput {
     return { ok: false, error: msg };
+  }
+
+  vaildOwner(owner: User, cafeId: number): CoreOutput {
+    try {
+      if (owner.cafesId.includes(cafeId)) {
+        return {
+          ok: true,
+        };
+      }
+      return this.errorMsg('사장님의 카페가 아닙니다.');
+    } catch (e) {
+      console.log(e);
+      return this.InternalServerErrorOutput;
+    }
   }
 }

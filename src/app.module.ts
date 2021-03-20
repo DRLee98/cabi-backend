@@ -22,6 +22,7 @@ import { Review } from './cafes/entities/review.entity';
 import { Rating } from './cafes/entities/rating.entity';
 import { Nutrient } from './cafes/entities/nutrient.entity';
 import { Keyword } from './cafes/entities/keyword.entity';
+import { Reply } from './cafes/entities/reply.entity';
 
 @Module({
   imports: [
@@ -52,7 +53,17 @@ import { Keyword } from './cafes/entities/keyword.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Address, Cafe, Menu, Review, Rating, Nutrient, Keyword],
+      entities: [
+        User,
+        Address,
+        Cafe,
+        Menu,
+        Review,
+        Rating,
+        Nutrient,
+        Keyword,
+        Reply,
+      ],
       synchronize: true,
     }),
     JwtModule.forRoot({
