@@ -9,16 +9,28 @@ import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 @Entity()
 export class Address extends CoreEntity {
   @Column()
-  @Field((type) => Int)
-  zipNo: number;
+  @Field((type) => String)
+  zonecode: string;
 
   @Column({ nullable: true })
   @Field((type) => String, { nullable: true })
-  roadAddr?: string;
+  address?: string;
 
   @Column({ nullable: true })
   @Field((type) => String, { nullable: true })
-  jibunAddr?: string;
+  sido?: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  sigungu?: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  sigunguCode?: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  bname?: string;
 
   @Column({ nullable: true })
   @Field((type) => Int, { nullable: true })

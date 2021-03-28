@@ -23,6 +23,7 @@ import { Rating } from './cafes/entities/rating.entity';
 import { Nutrient } from './cafes/entities/nutrient.entity';
 import { Keyword } from './cafes/entities/keyword.entity';
 import { Reply } from './cafes/entities/reply.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { Reply } from './cafes/entities/reply.entity';
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     CafesModule,
     ReviewsModule,
