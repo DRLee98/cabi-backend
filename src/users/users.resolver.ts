@@ -7,6 +7,10 @@ import {
 } from './dtos/create-account.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
+import {
+  ToggleLikeCafeInput,
+  ToggleLikeCafeOutput,
+} from './dtos/toggle-like-cafe.dto';
 import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { User } from './entites/user.entity';
 import { UserService } from './users.service';
@@ -43,9 +47,9 @@ export class UserResolver {
   }
 
   @Role(['Any'])
-  @Query((returns) => User)
-  myProfile(@AuthUser() user: User): User {
-    return user;
+  @Query((returns) => UserProfileOutput)
+  myProfile(@AuthUser() user: User): Promise<UserProfileOutput> {
+    return this.usersService.userProfile(user);
   }
 
   @Query((returns) => UserProfileOutput)
@@ -53,5 +57,14 @@ export class UserResolver {
     @Args('input') userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
     return this.usersService.userProfile(userProfileInput);
+  }
+
+  @Role(['Client'])
+  @Mutation((returns) => ToggleLikeCafeOutput)
+  toggleLikeCafe(
+    @AuthUser() user: User,
+    @Args('input') toggleLikeCafeInput: ToggleLikeCafeInput,
+  ): Promise<ToggleLikeCafeOutput> {
+    return this.usersService.toggleLikeCafe(user, toggleLikeCafeInput);
   }
 }

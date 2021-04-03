@@ -1,5 +1,5 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt } from 'class-validator';
+import { IsInt, Max, Min } from 'class-validator';
 import { CoreEntity } from 'src/common/entites/core.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { Cafe } from './cafe.entity';
@@ -11,8 +11,10 @@ import { Review } from './review.entity';
 @Entity()
 export class Rating extends CoreEntity {
   @Column()
-  @Field((type) => Int)
+  @Field((type) => Int, {})
   @IsInt()
+  @Min(0)
+  @Max(5)
   score: number;
 
   @OneToOne((type) => Review, (review) => review.rating, {

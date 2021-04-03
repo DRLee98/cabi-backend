@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CoreOutput } from 'src/common/dtos/output.dto';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -14,6 +13,11 @@ import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { DeleteAccountOutput } from './dtos/delete-account.dto';
 import { CommonService } from 'src/common/common.service';
+import {
+  ToggleLikeCafeInput,
+  ToggleLikeCafeOutput,
+} from './dtos/toggle-like-cafe.dto';
+import { Cafe } from 'src/cafes/entities/cafe.entity';
 
 @Injectable()
 export class UserService {
@@ -22,6 +26,8 @@ export class UserService {
     private readonly usersRepository: Repository<User>,
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,
+    @InjectRepository(Cafe)
+    private readonly cafeRepository: Repository<Cafe>,
     private readonly jwtService: JwtService,
     private readonly commonService: CommonService,
   ) {}
@@ -123,15 +129,71 @@ export class UserService {
     }
   }
 
-  async userProfile({ id }: UserProfileInput): Promise<UserProfileOutput> {
+  async myProfile({ id }: User): Promise<UserProfileOutput> {
     try {
-      const user = await this.usersRepository.findOne(id);
+      const user = await this.usersRepository.findOne(id, {
+        relations: ['likeCafes'],
+      });
       if (!user) {
         return this.commonService.errorMsg('존재하지 않는 유저입니다.');
       }
       return {
         ok: true,
         user,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
+  async userProfile({ id }: UserProfileInput): Promise<UserProfileOutput> {
+    try {
+      const user = await this.usersRepository.findOne(id, {
+        relations: ['likeCafes'],
+      });
+      if (!user) {
+        return this.commonService.errorMsg('존재하지 않는 유저입니다.');
+      }
+      return {
+        ok: true,
+        user,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
+  async toggleLikeCafe(
+    user: User,
+    { cafeId }: ToggleLikeCafeInput,
+  ): Promise<ToggleLikeCafeOutput> {
+    try {
+      const cafe = await this.cafeRepository.findOne(cafeId);
+      if (!cafe) {
+        return this.commonService.errorMsg('존재하지 않는 카페입니다.');
+      }
+
+      let likedCafe = [];
+      const relationUser = await this.usersRepository.findOne(
+        { id: user.id },
+        {
+          relations: ['likeCafes'],
+        },
+      );
+      const liked = relationUser.likeCafes.filter((cafe) => cafe.id === cafeId);
+
+      if (liked.length > 0) {
+        likedCafe = relationUser.likeCafes.filter((cafe) => cafe.id !== cafeId);
+      } else {
+        likedCafe = [...relationUser.likeCafes, cafe];
+      }
+      relationUser.likeCafes = likedCafe;
+
+      await this.usersRepository.save(relationUser);
+      return {
+        ok: true,
       };
     } catch (e) {
       console.log(e);

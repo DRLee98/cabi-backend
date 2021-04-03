@@ -4,11 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
 import { Address } from 'src/common/entites/address.entity';
 import { User } from 'src/users/entites/user.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { CafeDetailInput, CafeDetailOutput } from './dtos/cafe-detail.dto';
 import { CreateCafeInput, CreateCafeOutput } from './dtos/create-cafe.dto';
 import { DeleteCafeInput, DeleteCafeOutput } from './dtos/delete-cafe.dto';
 import { EditCafeInput, EditCafeOutput } from './dtos/edit-cafe.dto';
+import { SearchCafeInput, SearchCafeOutput } from './dtos/search-cafes.dto';
 import { SeeCafeOutput } from './dtos/see-cafes.dto';
 import { Cafe } from './entities/cafe.entity';
 import { Keyword } from './entities/keyword.entity';
@@ -99,6 +100,22 @@ export class CafeService {
     }
   }
 
+  // 카페 검색
+  async searchCafes({ word }: SearchCafeInput): Promise<SearchCafeOutput> {
+    try {
+      const cafes = await this.cafeRepository.find({
+        where: { name: ILike(`%${word}%`) },
+      });
+      return {
+        ok: true,
+        cafes,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
   // 카페 순위별로 조회
   async cafesRank(): Promise<SeeCafeOutput> {
     try {
@@ -134,7 +151,7 @@ export class CafeService {
   async cafeDetail({ id }: CafeDetailInput): Promise<CafeDetailOutput> {
     try {
       const findCafe = await this.cafeRepository.findOne(id, {
-        relations: ['menus', 'reviews'],
+        relations: ['menus', 'reviews', 'likedUsers'],
       });
       if (!findCafe) {
         return this.commonService.errorMsg('존재하지 않는 카페 입니다.');
@@ -230,7 +247,7 @@ export class CafeService {
       let totalScore = 0;
       cafe.ratings.forEach((ratings) => (totalScore += ratings.score));
       cafe.totalScore = totalScore;
-      cafe.avgScore = totalScore / cafe.ratings.length;
+      cafe.avgScore = totalScore > 0 ? totalScore / cafe.ratings.length : 0;
       await this.cafeRepository.save(cafe);
     });
   }

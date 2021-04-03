@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
 import { User } from 'src/users/entites/user.entity';
@@ -33,6 +34,7 @@ export class MenuService {
       menuImg,
       category,
       nutrient,
+      options,
     }: CreateMenuInput,
   ): Promise<CreateMenuOutput> {
     try {
@@ -55,10 +57,12 @@ export class MenuService {
         description,
         category,
         ...(menuImg && { menuImg }),
+        ...(options && { options }),
       });
       const menuNutrient = await this.nutrientRepository.save(
         this.nutrientRepository.create(nutrient),
       );
+
       menu.nutrient = menuNutrient;
       menu.cafe = findCafe;
       await this.menuRepository.save(menu);
@@ -103,7 +107,7 @@ export class MenuService {
   //메뉴 수정
   async editMenu(
     owner: User,
-    { cafeId, menuId, nutrient, ...rest }: EditMenuInput,
+    { cafeId, menuId, editNutrient, ...rest }: EditMenuInput,
   ): Promise<EditMenuOutput> {
     try {
       const { ok, error, menu } = await this.menuDetail({ cafeId, menuId });
@@ -117,13 +121,13 @@ export class MenuService {
       if (!validOk) {
         return this.commonService.errorMsg(validError);
       }
-      if (nutrient) {
-        const editNutrient = await this.nutrientRepository.save({
+      if (editNutrient) {
+        const saveNutrient = await this.nutrientRepository.save({
           ...menu.nutrient,
-          ...nutrient,
+          ...editNutrient,
         });
         if (!menu.nutrient) {
-          menu.nutrient = editNutrient;
+          menu.nutrient = saveNutrient;
         }
       }
       await this.menuRepository.save({ ...menu, ...rest });
@@ -161,5 +165,18 @@ export class MenuService {
       console.log(e);
       return this.commonService.InternalServerErrorOutput;
     }
+  }
+
+  //매시 0분마다 별점 합산
+  @Cron('0 0 * * * *')
+  async menuScoreSet() {
+    const menus = await this.menuRepository.find();
+    menus.forEach(async (menu) => {
+      let totalScore = 0;
+      menu.ratings.forEach((ratings) => (totalScore += ratings.score));
+      menu.totalScore = totalScore;
+      menu.avgScore = totalScore > 0 ? totalScore / menu.ratings.length : 0;
+      await this.menuRepository.save(menu);
+    });
   }
 }

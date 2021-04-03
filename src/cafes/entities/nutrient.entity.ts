@@ -60,9 +60,8 @@ export class Nutrient extends CoreEntity {
 
   @OneToOne((type) => Menu, (menu) => menu.nutrient, {
     onDelete: 'CASCADE',
-    nullable: true,
   })
   @JoinColumn()
-  @Field((type) => Menu, { nullable: true })
+  @Field((type) => Menu)
   menu?: Menu;
 }

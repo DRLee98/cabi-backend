@@ -1,7 +1,22 @@
-import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
+import {
+  Field,
+  InputType,
+  Int,
+  ObjectType,
+  OmitType,
+  PickType,
+} from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Menu } from '../entities/menu.entity';
 import { Nutrient } from '../entities/nutrient.entity';
+
+@InputType()
+class CreateNutrientInput extends OmitType(Nutrient, [
+  'id',
+  'menu',
+  'createdAt',
+  'updatedAt',
+]) {}
 
 @InputType()
 export class CreateMenuInput extends PickType(Menu, [
@@ -9,6 +24,7 @@ export class CreateMenuInput extends PickType(Menu, [
   'description',
   'price',
   'category',
+  'options',
 ]) {
   @Field((type) => Int)
   cafeId: number;
@@ -16,8 +32,8 @@ export class CreateMenuInput extends PickType(Menu, [
   @Field((type) => String, { nullable: true })
   menuImg?: string;
 
-  @Field((type) => Nutrient, { nullable: true })
-  nutrient?: Nutrient;
+  @Field((type) => CreateNutrientInput, { nullable: true })
+  nutrient?: CreateNutrientInput;
 }
 
 @ObjectType()

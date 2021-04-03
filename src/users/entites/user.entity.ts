@@ -12,6 +12,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   OneToOne,
   RelationId,
@@ -75,6 +77,14 @@ export class User extends CoreEntity {
 
   @RelationId((user: User) => user.cafes)
   cafesId: number[];
+
+  @ManyToMany((type) => Cafe, (cafe) => cafe.likedUsers, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinTable()
+  @Field((type) => [Cafe], { nullable: true })
+  likeCafes?: Cafe[];
 
   @OneToMany((type) => Review, (review) => review.writer, {
     nullable: true,

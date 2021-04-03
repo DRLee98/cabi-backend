@@ -7,6 +7,7 @@ import { CafeDetailInput, CafeDetailOutput } from './dtos/cafe-detail.dto';
 import { CreateCafeInput, CreateCafeOutput } from './dtos/create-cafe.dto';
 import { DeleteCafeInput, DeleteCafeOutput } from './dtos/delete-cafe.dto';
 import { EditCafeInput, EditCafeOutput } from './dtos/edit-cafe.dto';
+import { SearchCafeInput, SearchCafeOutput } from './dtos/search-cafes.dto';
 import { SeeCafeOutput } from './dtos/see-cafes.dto';
 import { Cafe } from './entities/cafe.entity';
 
@@ -26,6 +27,13 @@ export class CafeResolver {
   @Query((returns) => SeeCafeOutput)
   seeCafes(): Promise<SeeCafeOutput> {
     return this.cafeService.seeCafes();
+  }
+
+  @Query((returns) => SearchCafeOutput)
+  searchCafes(
+    @Args('input') searchCafeInput: SearchCafeInput,
+  ): Promise<SearchCafeOutput> {
+    return this.cafeService.searchCafes(searchCafeInput);
   }
 
   @Query((returns) => SeeCafeOutput)

@@ -59,6 +59,13 @@ export class Cafe extends CoreEntity {
   @Field((type) => User)
   owner: User;
 
+  @ManyToMany((type) => User, (user) => user.likeCafes, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => [User], { nullable: true })
+  likedUsers?: User[];
+
   @OneToMany((type) => Menu, (menu) => menu.cafe, {
     nullable: true,
     onDelete: 'SET NULL',

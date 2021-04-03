@@ -5,7 +5,7 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entites/core.entity';
 import {
   Column,
@@ -19,6 +19,29 @@ import { Cafe } from './cafe.entity';
 import { Nutrient } from './nutrient.entity';
 import { Rating } from './rating.entity';
 import { Review } from './review.entity';
+
+@InputType('OptionInputType', { isAbstract: true })
+@ObjectType()
+export class Option {
+  @Field((type) => String)
+  name: string;
+
+  @Field((type) => Int, { nullable: true })
+  price?: number;
+
+  @Field((type) => [OptionItem], { nullable: true })
+  optionItems?: OptionItem[];
+}
+
+@InputType('OptionItemInputType', { isAbstract: true })
+@ObjectType()
+export class OptionItem {
+  @Field((type) => String)
+  name: string;
+
+  @Field((type) => Int, { nullable: true })
+  price?: number;
+}
 
 enum Category {
   Beverage = 'Beverage',
@@ -69,15 +92,10 @@ export class Menu extends CoreEntity {
   })
   @Field((type) => Nutrient, { nullable: true })
   nutrient?: Nutrient;
-  /*
-  @OneToMany((type) => Option, (option) => option.menu, {
-    eager: true,
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+
+  @Column({ type: 'json', nullable: true })
   @Field((type) => [Option], { nullable: true })
   options?: Option[];
-  */
 
   @OneToMany((type) => Review, (review) => review.cafe, {
     nullable: true,
@@ -93,4 +111,14 @@ export class Menu extends CoreEntity {
   })
   @Field((type) => [Rating], { nullable: true })
   ratings?: Rating[];
+
+  @Column({ default: 0 })
+  @Field((type) => Int)
+  @IsNumber()
+  totalScore: number;
+
+  @Column({ default: 0 })
+  @Field((type) => Int)
+  @IsNumber()
+  avgScore: number;
 }
