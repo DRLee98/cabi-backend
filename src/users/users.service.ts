@@ -42,6 +42,7 @@ export class UserService {
     password,
     role,
     address,
+    profileImg,
   }: CreateAccountInput): Promise<CreateAccountOutput> {
     try {
       const findEmail = await this.usersRepository.findOne({ email });
@@ -53,6 +54,7 @@ export class UserService {
         email,
         password,
         role,
+        ...(profileImg && { profileImg }),
       });
       const userAddres = await this.addressRepository.save(
         this.addressRepository.create(address),
