@@ -93,7 +93,7 @@ export class UserService {
 
   async editProfile(
     userId: number,
-    { name, password, profileImg, address }: EditProfileInput,
+    { name, password, oldPassword, profileImg, address }: EditProfileInput,
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.usersRepository.findOne(userId);
@@ -103,8 +103,17 @@ export class UserService {
       }
 
       if (name) user.name = name;
-      if (password) user.password = password;
       if (profileImg) user.profileImg = profileImg;
+
+      if (password) {
+        if (oldPassword && (await user.comparePassword(oldPassword))) {
+          user.password = password;
+        } else {
+          return this.commonService.errorMsg(
+            '이전 비밀번호가 일치하지 않습니다.',
+          );
+        }
+      }
 
       await this.usersRepository.save(user);
       return {
