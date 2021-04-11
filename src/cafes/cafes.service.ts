@@ -9,7 +9,12 @@ import { CafeDetailInput, CafeDetailOutput } from './dtos/cafe-detail.dto';
 import { CreateCafeInput, CreateCafeOutput } from './dtos/create-cafe.dto';
 import { DeleteCafeInput, DeleteCafeOutput } from './dtos/delete-cafe.dto';
 import { EditCafeInput, EditCafeOutput } from './dtos/edit-cafe.dto';
-import { SearchCafeInput, SearchCafeOutput } from './dtos/search-cafes.dto';
+import { KeywordsOutput } from './dtos/keywords.dto';
+import {
+  SearchCafesKeywordInput,
+  SearchCafesKeywordOutput,
+} from './dtos/search-cafes-keyword.dto';
+import { SearchCafesInput, SearchCafesOutput } from './dtos/search-cafes.dto';
 import { SeeCafeOutput } from './dtos/see-cafes.dto';
 import { Cafe } from './entities/cafe.entity';
 import { Keyword } from './entities/keyword.entity';
@@ -27,24 +32,25 @@ export class CafeService {
   ) {}
 
   //키워드가 이미 있는지 찾아보고 없으면 생성
-  findAndCreateKeywords(keywordsName: string[]): Keyword[] {
-    const keywords: Keyword[] = [];
-    keywordsName.forEach(async (name) => {
-      const keywordName = name.trim().toLowerCase();
-      const keywordSlug = keywordName.replace(/ /g, '_');
-      let keyword = await this.keywordRepository.findOne({
-        slug: keywordSlug,
-      });
-      if (!keyword) {
-        keyword = await this.keywordRepository.save(
-          this.keywordRepository.create({
-            name: keywordName,
-            slug: keywordSlug,
-          }),
-        );
-      }
-      keywords.push(keyword);
-    });
+  async findAndCreateKeywords(keywordsName: string[]): Promise<Keyword[]> {
+    const keywords = await Promise.all(
+      keywordsName.map(async (name) => {
+        const keywordName = name.trim().toLowerCase();
+        const keywordSlug = keywordName.replace(/ /g, '_');
+        let keyword = await this.keywordRepository.findOne({
+          slug: keywordSlug,
+        });
+        if (!keyword) {
+          keyword = await this.keywordRepository.save(
+            this.keywordRepository.create({
+              name: keywordName,
+              slug: keywordSlug,
+            }),
+          );
+        }
+        return keyword;
+      }),
+    );
     return keywords;
   }
 
@@ -67,7 +73,7 @@ export class CafeService {
         coverImg,
       });
       if (keywordsName) {
-        const keywords = this.findAndCreateKeywords(keywordsName);
+        const keywords = await this.findAndCreateKeywords(keywordsName);
         createCafe.keywords = keywords;
       }
       const cafeAddress = await this.addressRepository.save(
@@ -75,6 +81,7 @@ export class CafeService {
       );
       createCafe.address = cafeAddress;
       createCafe.owner = owner;
+      console.log(createCafe);
       const newCafe = await this.cafeRepository.save(createCafe);
       return {
         ok: true,
@@ -101,7 +108,7 @@ export class CafeService {
   }
 
   // 카페 검색
-  async searchCafes({ word }: SearchCafeInput): Promise<SearchCafeOutput> {
+  async searchCafes({ word }: SearchCafesInput): Promise<SearchCafesOutput> {
     try {
       const cafes = await this.cafeRepository.find({
         where: { name: ILike(`%${word}%`) },
@@ -196,7 +203,7 @@ export class CafeService {
         await this.addressRepository.save({ ...findCafe.address, ...address });
       }
       if (keywordsName) {
-        const keywords = this.findAndCreateKeywords(keywordsName);
+        const keywords = await this.findAndCreateKeywords(keywordsName);
         findCafe.keywords = keywords;
       }
       await this.cafeRepository.save({
@@ -232,6 +239,39 @@ export class CafeService {
       await this.cafeRepository.remove(findCafe);
       return {
         ok: true,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
+  async viewKeywords(): Promise<KeywordsOutput> {
+    try {
+      const keywords = await this.keywordRepository.find();
+      return {
+        ok: true,
+        keywords,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
+  async searchCafesKeyword({
+    slug,
+  }: SearchCafesKeywordInput): Promise<SearchCafesKeywordOutput> {
+    try {
+      const { cafes } = await this.keywordRepository.findOne(
+        { slug },
+        {
+          relations: ['cafes'],
+        },
+      );
+      return {
+        ok: true,
+        cafes,
       };
     } catch (e) {
       console.log(e);

@@ -100,12 +100,10 @@ export class User extends CoreEntity {
   @Field((type) => [Reply], { nullable: true })
   reply?: Reply[];
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    if (this.password) {
+  async hashPassword(password: string): Promise<string> {
+    if (password) {
       try {
-        this.password = await bcrypt.hash(this.password, 10);
+        return await bcrypt.hash(this.password, 10);
       } catch (e) {
         console.log(e);
         throw new InternalServerErrorException();

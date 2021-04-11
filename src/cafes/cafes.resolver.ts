@@ -7,7 +7,12 @@ import { CafeDetailInput, CafeDetailOutput } from './dtos/cafe-detail.dto';
 import { CreateCafeInput, CreateCafeOutput } from './dtos/create-cafe.dto';
 import { DeleteCafeInput, DeleteCafeOutput } from './dtos/delete-cafe.dto';
 import { EditCafeInput, EditCafeOutput } from './dtos/edit-cafe.dto';
-import { SearchCafeInput, SearchCafeOutput } from './dtos/search-cafes.dto';
+import { KeywordsOutput } from './dtos/keywords.dto';
+import {
+  SearchCafesKeywordInput,
+  SearchCafesKeywordOutput,
+} from './dtos/search-cafes-keyword.dto';
+import { SearchCafesInput, SearchCafesOutput } from './dtos/search-cafes.dto';
 import { SeeCafeOutput } from './dtos/see-cafes.dto';
 import { Cafe } from './entities/cafe.entity';
 
@@ -29,10 +34,10 @@ export class CafeResolver {
     return this.cafeService.seeCafes();
   }
 
-  @Query((returns) => SearchCafeOutput)
+  @Query((returns) => SearchCafesOutput)
   searchCafes(
-    @Args('input') searchCafeInput: SearchCafeInput,
-  ): Promise<SearchCafeOutput> {
+    @Args('input') searchCafeInput: SearchCafesInput,
+  ): Promise<SearchCafesOutput> {
     return this.cafeService.searchCafes(searchCafeInput);
   }
 
@@ -70,5 +75,17 @@ export class CafeResolver {
     @Args('input') deleteCafeInput: DeleteCafeInput,
   ): Promise<DeleteCafeOutput> {
     return this.cafeService.deleteCafe(owner, deleteCafeInput);
+  }
+
+  @Query((returns) => KeywordsOutput)
+  viewKeywords(): Promise<KeywordsOutput> {
+    return this.cafeService.viewKeywords();
+  }
+
+  @Mutation((returns) => SearchCafesKeywordOutput)
+  searchCafesKeyword(
+    @Args('input') searchCafesKeywordInput: SearchCafesKeywordInput,
+  ): Promise<SearchCafesKeywordOutput> {
+    return this.cafeService.searchCafesKeyword(searchCafesKeywordInput);
   }
 }

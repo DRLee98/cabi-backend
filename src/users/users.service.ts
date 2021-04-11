@@ -56,10 +56,15 @@ export class UserService {
         role,
         ...(profileImg && { profileImg }),
       });
+
+      const hashPassword = await user.hashPassword(password);
+      user.password = hashPassword;
+
       const userAddres = await this.addressRepository.save(
         this.addressRepository.create(address),
       );
       user.address = userAddres;
+
       await this.usersRepository.save(user);
       return {
         ok: true,
@@ -107,7 +112,7 @@ export class UserService {
 
       if (password) {
         if (oldPassword && (await user.comparePassword(oldPassword))) {
-          user.password = password;
+          if (password) user.password = await user.hashPassword(password);
         } else {
           return this.commonService.errorMsg(
             '이전 비밀번호가 일치하지 않습니다.',
