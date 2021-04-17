@@ -35,20 +35,22 @@ export class CafeService {
   async findAndCreateKeywords(keywordsName: string[]): Promise<Keyword[]> {
     const keywords = await Promise.all(
       keywordsName.map(async (name) => {
-        const keywordName = name.trim().toLowerCase();
-        const keywordSlug = keywordName.replace(/ /g, '_');
-        let keyword = await this.keywordRepository.findOne({
-          slug: keywordSlug,
-        });
-        if (!keyword) {
-          keyword = await this.keywordRepository.save(
-            this.keywordRepository.create({
-              name: keywordName,
-              slug: keywordSlug,
-            }),
-          );
+        if (name !== '' || name !== null || name != undefined) {
+          const keywordName = name.trim().toLowerCase();
+          const keywordSlug = keywordName.replace(/ /g, '_');
+          let keyword = await this.keywordRepository.findOne({
+            slug: keywordSlug,
+          });
+          if (!keyword) {
+            keyword = await this.keywordRepository.save(
+              this.keywordRepository.create({
+                name: keywordName,
+                slug: keywordSlug,
+              }),
+            );
+          }
+          return keyword;
         }
-        return keyword;
       }),
     );
     return keywords;
