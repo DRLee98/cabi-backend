@@ -37,4 +37,7 @@ export class CreateMenuInput extends PickType(Menu, [
 }
 
 @ObjectType()
-export class CreateMenuOutput extends CoreOutput {}
+export class CreateMenuOutput extends CoreOutput {
+  @Field((type) => Int, { nullable: true })
+  menuId?: number;
+}

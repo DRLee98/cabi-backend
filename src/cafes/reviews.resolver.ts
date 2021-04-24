@@ -7,9 +7,9 @@ import {
   CreateCafeReviewOutput,
 } from './dtos/create-cafe-review.dto';
 import {
-  CreateMenuReviewInput,
-  CreateMenuReviewOutput,
-} from './dtos/create-menu-review.dto';
+  CreateReviewInput,
+  CreateReviewOutput,
+} from './dtos/create-review.dto';
 import { CreateReplyInput, CreateReplyOutput } from './dtos/create-reply.dto';
 import { DeleteReplyInput, DeleteReplyOutput } from './dtos/delete-reply.dto';
 import {
@@ -33,11 +33,11 @@ export class ReviewResolver {
   }
 
   @Role(['Any'])
-  @Mutation((returns) => CreateMenuReviewOutput)
+  @Mutation((returns) => CreateReviewOutput)
   createMenuReview(
     @AuthUser() writer: User,
-    @Args('input') createMenuReviewInput: CreateMenuReviewInput,
-  ): Promise<CreateMenuReviewOutput> {
+    @Args('input') createMenuReviewInput: CreateReviewInput,
+  ): Promise<CreateReviewOutput> {
     return this.reviewService.createMenuReview(writer, createMenuReviewInput);
   }
 

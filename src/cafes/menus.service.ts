@@ -66,7 +66,9 @@ export class MenuService {
       menu.nutrient = menuNutrient;
       menu.cafe = findCafe;
       await this.menuRepository.save(menu);
+
       return {
+        menuId: menu.id,
         ok: true,
       };
     } catch (e) {
