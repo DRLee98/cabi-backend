@@ -45,6 +45,7 @@ export class OptionItem {
 
 enum Category {
   Beverage = 'Beverage',
+  Dessert = 'Dessert',
   Bread = 'Bread',
   Meal = 'Meal',
   Goods = 'Goods',
