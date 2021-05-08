@@ -7,8 +7,8 @@ import {
   CreateCafeReviewOutput,
 } from './dtos/create-cafe-review.dto';
 import {
-  CreateReviewInput,
-  CreateReviewOutput,
+  CreateMenuReviewInput,
+  CreateMenuReviewOutput,
 } from './dtos/create-review.dto';
 import { CreateReplyInput, CreateReplyOutput } from './dtos/create-reply.dto';
 import { DeleteReplyInput, DeleteReplyOutput } from './dtos/delete-reply.dto';
@@ -23,7 +23,7 @@ import { ReviewService } from './reviews.service';
 export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Role(['Any'])
+  @Role(['Client'])
   @Mutation((returns) => CreateCafeReviewOutput)
   createCafeReview(
     @AuthUser() writer: User,
@@ -33,11 +33,11 @@ export class ReviewResolver {
   }
 
   @Role(['Any'])
-  @Mutation((returns) => CreateReviewOutput)
+  @Mutation((returns) => CreateMenuReviewOutput)
   createMenuReview(
     @AuthUser() writer: User,
-    @Args('input') createMenuReviewInput: CreateReviewInput,
-  ): Promise<CreateReviewOutput> {
+    @Args('input') createMenuReviewInput: CreateMenuReviewInput,
+  ): Promise<CreateMenuReviewOutput> {
     return this.reviewService.createMenuReview(writer, createMenuReviewInput);
   }
 

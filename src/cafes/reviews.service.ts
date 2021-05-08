@@ -7,8 +7,8 @@ import {
   CreateCafeReviewOutput,
 } from './dtos/create-cafe-review.dto';
 import {
-  CreateReviewInput,
-  CreateReviewOutput,
+  CreateMenuReviewInput,
+  CreateMenuReviewOutput,
 } from './dtos/create-review.dto';
 import { CreateReplyInput, CreateReplyOutput } from './dtos/create-reply.dto';
 import { DeleteReplyInput, DeleteReplyOutput } from './dtos/delete-reply.dto';
@@ -57,6 +57,7 @@ export class ReviewService {
       await this.reviewRepository.save(review);
       return {
         ok: true,
+        reviewId: review.id,
       };
     } catch (e) {
       console.log(e);
@@ -67,8 +68,8 @@ export class ReviewService {
   //메뉴 리뷰 생성
   async createMenuReview(
     writer: User,
-    { contents, score, cafeId, menuId }: CreateReviewInput,
-  ): Promise<CreateReviewOutput> {
+    { contents, score, cafeId, menuId }: CreateMenuReviewInput,
+  ): Promise<CreateMenuReviewOutput> {
     try {
       const { ok, error, menu } = await this.menuService.menuDetail({
         cafeId,
@@ -85,6 +86,7 @@ export class ReviewService {
       await this.reviewRepository.save(review);
       return {
         ok: true,
+        reviewId: review.id,
       };
     } catch (e) {
       console.log(e);

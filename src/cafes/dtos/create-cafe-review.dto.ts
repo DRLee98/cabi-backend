@@ -12,4 +12,7 @@ export class CreateCafeReviewInput extends PickType(Review, ['contents']) {
 }
 
 @ObjectType()
-export class CreateCafeReviewOutput extends CoreOutput {}
+export class CreateCafeReviewOutput extends CoreOutput {
+  @Field((type) => Int, { nullable: true })
+  reviewId?: number;
+}
