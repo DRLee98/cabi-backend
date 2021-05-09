@@ -99,14 +99,14 @@ export class Menu extends CoreEntity {
   @Field((type) => [Option], { nullable: true })
   options?: Option[];
 
-  @OneToMany((type) => Review, (review) => review.cafe, {
+  @OneToMany((type) => Review, (review) => review.menu, {
     nullable: true,
     onDelete: 'SET NULL',
   })
   @Field((type) => [Review], { nullable: true })
   reviews?: Review[];
 
-  @OneToMany((type) => Rating, (rating) => rating.cafe, {
+  @OneToMany((type) => Rating, (rating) => rating.menu, {
     nullable: true,
     onDelete: 'SET NULL',
     eager: true,

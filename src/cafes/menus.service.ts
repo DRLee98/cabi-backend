@@ -91,7 +91,7 @@ export class MenuService {
       }
       const findMenu = await this.menuRepository.findOne(
         { id: menuId },
-        { relations: ['nutrient'] },
+        { relations: ['nutrient', 'reviews'] },
       );
       if (!findMenu) {
         return this.commonService.errorMsg('존재하지 않는 메뉴 입니다.');
