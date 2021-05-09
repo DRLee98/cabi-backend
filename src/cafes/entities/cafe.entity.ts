@@ -1,4 +1,4 @@
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CoreEntity } from '../../common/entites/core.entity';
 import {
   Column,
@@ -93,8 +93,8 @@ export class Cafe extends CoreEntity {
   @IsNumber()
   totalScore: number;
 
-  @Column({ default: 0 })
-  @Field((type) => Int)
+  @Column({ type: 'float', default: 0 })
+  @Field((type) => Float)
   @IsNumber()
   avgScore: number;
 }

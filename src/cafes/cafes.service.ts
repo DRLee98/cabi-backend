@@ -289,7 +289,10 @@ export class CafeService {
       let totalScore = 0;
       cafe.ratings.forEach((ratings) => (totalScore += ratings.score));
       cafe.totalScore = totalScore;
-      cafe.avgScore = totalScore > 0 ? totalScore / cafe.ratings.length : 0;
+      cafe.avgScore =
+        totalScore > 0
+          ? Math.floor((totalScore / cafe.ratings.length) * 100) / 100
+          : 0;
       await this.cafeRepository.save(cafe);
     });
   }

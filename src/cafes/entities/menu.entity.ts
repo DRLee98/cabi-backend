@@ -1,5 +1,6 @@
 import {
   Field,
+  Float,
   InputType,
   Int,
   ObjectType,
@@ -118,8 +119,8 @@ export class Menu extends CoreEntity {
   @IsNumber()
   totalScore: number;
 
-  @Column({ default: 0 })
-  @Field((type) => Int)
+  @Column({ type: 'float', default: 0 })
+  @Field((type) => Float)
   @IsNumber()
   avgScore: number;
 }

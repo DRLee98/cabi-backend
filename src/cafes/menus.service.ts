@@ -177,7 +177,10 @@ export class MenuService {
       let totalScore = 0;
       menu.ratings.forEach((ratings) => (totalScore += ratings.score));
       menu.totalScore = totalScore;
-      menu.avgScore = totalScore > 0 ? totalScore / menu.ratings.length : 0;
+      menu.avgScore =
+        totalScore > 0
+          ? Math.floor((totalScore / menu.ratings.length) * 100) / 100
+          : 0;
       await this.menuRepository.save(menu);
     });
   }
