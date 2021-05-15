@@ -194,7 +194,7 @@ export class CafeService {
       if (!validOk) {
         return this.commonService.errorMsg(validError);
       }
-      if (name) {
+      if (name && findCafe.name !== name) {
         const findName = await this.cafeRepository.findOne({ name });
         if (findName) {
           return this.commonService.errorMsg('이미 사용중인 카페이름 입니다.');

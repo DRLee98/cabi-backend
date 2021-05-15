@@ -79,6 +79,11 @@ export class Menu extends CoreEntity {
   @IsString()
   menuImg?: string;
 
+  @Column({ nullable: true })
+  @Field((type) => Int, { nullable: true })
+  @IsInt()
+  ownerId?: number;
+
   @Column({ type: 'enum', enum: Category })
   @Field((type) => Category)
   @IsEnum(Category)

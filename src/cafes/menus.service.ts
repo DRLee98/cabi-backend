@@ -65,6 +65,7 @@ export class MenuService {
 
       menu.nutrient = menuNutrient;
       menu.cafe = findCafe;
+      menu.ownerId = owner.id;
       await this.menuRepository.save(menu);
 
       return {
