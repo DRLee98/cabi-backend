@@ -83,7 +83,6 @@ export class CafeService {
       );
       createCafe.address = cafeAddress;
       createCafe.owner = owner;
-      console.log(createCafe);
       const newCafe = await this.cafeRepository.save(createCafe);
       return {
         ok: true,
@@ -130,7 +129,7 @@ export class CafeService {
     try {
       const cafes = await this.cafeRepository.find({
         order: { totalScore: 'DESC' },
-        take: 20,
+        take: 10,
       });
       return {
         ok: true,

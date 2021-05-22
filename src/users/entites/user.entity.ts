@@ -7,11 +7,8 @@ import {
 } from '@nestjs/graphql';
 import { CoreEntity } from '../../common/entites/core.entity';
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -24,6 +21,8 @@ import { IsEmail, IsEnum, IsString } from 'class-validator';
 import { Cafe } from '../../cafes/entities/cafe.entity';
 import { Review } from '../../cafes/entities/review.entity';
 import { Reply } from 'src/cafes/entities/reply.entity';
+import { ChatRoom } from 'src/talk/entites/chatRoom.entity';
+import { Message } from 'src/talk/entites/message.entity';
 
 export enum UserRole {
   Owner = 'Owner',
@@ -99,6 +98,21 @@ export class User extends CoreEntity {
   })
   @Field((type) => [Reply], { nullable: true })
   reply?: Reply[];
+
+  @ManyToMany((type) => ChatRoom, (chatRoom) => chatRoom.users, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinTable()
+  @Field((type) => [ChatRoom], { nullable: true })
+  chatRooms?: ChatRoom[];
+
+  @OneToMany((type) => Message, (message) => message.writer, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field((type) => [Message], { nullable: true })
+  messages?: Message[];
 
   async hashPassword(password: string): Promise<string> {
     if (password) {

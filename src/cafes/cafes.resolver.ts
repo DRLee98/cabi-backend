@@ -82,7 +82,7 @@ export class CafeResolver {
     return this.cafeService.viewKeywords();
   }
 
-  @Mutation((returns) => SearchCafesKeywordOutput)
+  @Query((returns) => SearchCafesKeywordOutput)
   searchCafesKeyword(
     @Args('input') searchCafesKeywordInput: SearchCafesKeywordInput,
   ): Promise<SearchCafesKeywordOutput> {

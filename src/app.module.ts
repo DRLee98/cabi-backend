@@ -24,6 +24,9 @@ import { Nutrient } from './cafes/entities/nutrient.entity';
 import { Keyword } from './cafes/entities/keyword.entity';
 import { Reply } from './cafes/entities/reply.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TalkModule } from './talk/talk.module';
+import { ChatRoom } from './talk/entites/chatRoom.entity';
+import { Message } from './talk/entites/message.entity';
 
 @Module({
   imports: [
@@ -45,7 +48,13 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
-      context: ({ req }) => ({ token: req.headers['x-jwt'] }),
+      context: ({ req, connection }) => {
+        if (req) {
+          return { token: req.headers['x-jwt'] };
+        } else if (connection) {
+          console.log(connection);
+        }
+      },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -64,6 +73,8 @@ import { ScheduleModule } from '@nestjs/schedule';
         Nutrient,
         Keyword,
         Reply,
+        ChatRoom,
+        Message,
       ],
       synchronize: true,
     }),
@@ -77,6 +88,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CommonModule,
     AuthModule,
     UploadsModule,
+    TalkModule,
   ],
 })
 export class AppModule {}

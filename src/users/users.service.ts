@@ -148,7 +148,7 @@ export class UserService {
   async myProfile({ id }: User): Promise<UserProfileOutput> {
     try {
       const user = await this.usersRepository.findOne(id, {
-        relations: ['likeCafes'],
+        relations: ['likeCafes', 'chatRooms'],
       });
       if (!user) {
         return this.commonService.errorMsg('존재하지 않는 유저입니다.');
@@ -166,7 +166,7 @@ export class UserService {
   async userProfile({ id }: UserProfileInput): Promise<UserProfileOutput> {
     try {
       const user = await this.usersRepository.findOne(id, {
-        relations: ['likeCafes'],
+        relations: ['likeCafes', 'chatRooms'],
       });
       if (!user) {
         return this.commonService.errorMsg('존재하지 않는 유저입니다.');
