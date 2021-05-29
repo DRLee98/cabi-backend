@@ -30,7 +30,10 @@ export class CreateMenuInput extends PickType(Menu, [
   cafeId: number;
 
   @Field((type) => String, { nullable: true })
-  menuImg?: string;
+  originalMenuImg?: string;
+
+  @Field((type) => String, { nullable: true })
+  smallMenuImg?: string;
 
   @Field((type) => CreateNutrientInput, { nullable: true })
   nutrient?: CreateNutrientInput;

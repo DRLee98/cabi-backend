@@ -58,7 +58,12 @@ export class User extends CoreEntity {
   @Column({ nullable: true })
   @Field((type) => String, { nullable: true })
   @IsString()
-  profileImg?: string;
+  originalProfileImg?: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  smallProfileImg?: string;
 
   @OneToOne((type) => Address, (address) => address.user, {
     eager: true,

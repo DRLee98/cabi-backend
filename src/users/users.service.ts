@@ -42,7 +42,8 @@ export class UserService {
     password,
     role,
     address,
-    profileImg,
+    originalProfileImg,
+    smallProfileImg,
   }: CreateAccountInput): Promise<CreateAccountOutput> {
     try {
       const findEmail = await this.usersRepository.findOne({ email });
@@ -54,7 +55,8 @@ export class UserService {
         email,
         password,
         role,
-        ...(profileImg && { profileImg }),
+        ...(originalProfileImg && { originalProfileImg }),
+        ...(smallProfileImg && { smallProfileImg }),
       });
 
       const hashPassword = await user.hashPassword(password);
@@ -98,7 +100,14 @@ export class UserService {
 
   async editProfile(
     userId: number,
-    { name, password, oldPassword, profileImg, address }: EditProfileInput,
+    {
+      name,
+      password,
+      oldPassword,
+      originalProfileImg,
+      smallProfileImg,
+      address,
+    }: EditProfileInput,
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.usersRepository.findOne(userId);
@@ -108,7 +117,8 @@ export class UserService {
       }
 
       if (name) user.name = name;
-      if (profileImg) user.profileImg = profileImg;
+      if (originalProfileImg) user.originalProfileImg = originalProfileImg;
+      if (smallProfileImg) user.smallProfileImg = smallProfileImg;
 
       if (password) {
         if (oldPassword && (await user.comparePassword(oldPassword))) {

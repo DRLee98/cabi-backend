@@ -34,7 +34,12 @@ export class Cafe extends CoreEntity {
   @Column({ nullable: true })
   @Field((type) => String, { nullable: true })
   @IsString()
-  coverImg?: string;
+  originalCoverImg?: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  smallCoverImg?: string;
 
   @OneToOne((type) => Address, (address) => address.cafe, {
     eager: true,

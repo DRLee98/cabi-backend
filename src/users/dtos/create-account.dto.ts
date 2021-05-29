@@ -14,7 +14,10 @@ export class CreateAccountInput extends PickType(User, [
   address: Address;
 
   @Field((type) => String, { nullable: true })
-  profileImg?: string;
+  originalProfileImg?: string;
+
+  @Field((type) => String, { nullable: true })
+  smallProfileImg?: string;
 }
 
 @ObjectType()

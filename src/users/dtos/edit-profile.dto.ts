@@ -11,7 +11,7 @@ import { User } from '../entites/user.entity';
 
 @InputType()
 export class EditProfileInput extends PartialType(
-  PickType(User, ['name', 'password', 'profileImg']),
+  PickType(User, ['name', 'password', 'originalProfileImg', 'smallProfileImg']),
 ) {
   @Field((type) => String, { nullable: true })
   oldPassword?: string;

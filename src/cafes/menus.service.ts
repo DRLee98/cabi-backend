@@ -31,7 +31,8 @@ export class MenuService {
       name,
       price,
       description,
-      menuImg,
+      originalMenuImg,
+      smallMenuImg,
       category,
       nutrient,
       options,
@@ -56,7 +57,8 @@ export class MenuService {
         price,
         description,
         category,
-        ...(menuImg && { menuImg }),
+        ...(originalMenuImg && { originalMenuImg }),
+        ...(smallMenuImg && { smallMenuImg }),
         ...(options && { options }),
       });
       const menuNutrient = await this.nutrientRepository.save(

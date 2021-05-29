@@ -26,7 +26,8 @@ export class EditMenuInput extends PartialType(
     'price',
     'description',
     'category',
-    'menuImg',
+    'originalMenuImg',
+    'smallMenuImg',
     'options',
   ]),
 ) {

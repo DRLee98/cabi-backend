@@ -59,7 +59,14 @@ export class CafeService {
   //카페 생성
   async createCafe(
     owner: User,
-    { name, description, coverImg, address, keywordsName }: CreateCafeInput,
+    {
+      name,
+      description,
+      originalCoverImg,
+      smallCoverImg,
+      address,
+      keywordsName,
+    }: CreateCafeInput,
   ): Promise<CreateCafeOutput> {
     try {
       const findName = await this.cafeRepository.findOne({ name });
@@ -72,7 +79,8 @@ export class CafeService {
       const createCafe = this.cafeRepository.create({
         name,
         description,
-        coverImg,
+        originalCoverImg,
+        smallCoverImg,
       });
       if (keywordsName) {
         const keywords = await this.findAndCreateKeywords(keywordsName);

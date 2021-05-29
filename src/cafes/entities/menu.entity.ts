@@ -77,7 +77,12 @@ export class Menu extends CoreEntity {
   @Column({ nullable: true })
   @Field((type) => String, { nullable: true })
   @IsString()
-  menuImg?: string;
+  originalMenuImg?: string;
+
+  @Column({ nullable: true })
+  @Field((type) => String, { nullable: true })
+  @IsString()
+  smallMenuImg?: string;
 
   @Column({ nullable: true })
   @Field((type) => Int, { nullable: true })

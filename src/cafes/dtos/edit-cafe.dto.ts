@@ -12,7 +12,7 @@ import { Cafe } from '../entities/cafe.entity';
 
 @InputType()
 export class EditCafeInput extends PartialType(
-  PickType(Cafe, ['name', 'description', 'coverImg']),
+  PickType(Cafe, ['name', 'description', 'originalCoverImg', 'smallCoverImg']),
 ) {
   @Field((type) => Int)
   cafeId: number;

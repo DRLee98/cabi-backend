@@ -9,7 +9,10 @@ export class CreateCafeInput extends PickType(Cafe, ['name', 'description']) {
   address: Address;
 
   @Field((type) => String, { nullable: true })
-  coverImg?: string;
+  originalCoverImg?: string;
+
+  @Field((type) => String, { nullable: true })
+  smallCoverImg?: string;
 
   @Field((type) => [String], { nullable: true })
   keywordsName?: string[];
