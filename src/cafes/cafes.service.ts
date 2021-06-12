@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
 import { Address } from 'src/common/entites/address.entity';
 import { User } from 'src/users/entites/user.entity';
-import { ILike, Repository } from 'typeorm';
+import { ILike, Not, Repository } from 'typeorm';
 import { CafeDetailInput, CafeDetailOutput } from './dtos/cafe-detail.dto';
 import { CreateCafeInput, CreateCafeOutput } from './dtos/create-cafe.dto';
 import { DeleteCafeInput, DeleteCafeOutput } from './dtos/delete-cafe.dto';
@@ -152,9 +152,15 @@ export class CafeService {
   //오너가 가진 카페들 조회
   async myCafes(owner: User): Promise<SeeCafeOutput> {
     try {
-      const findCafe = await this.cafeRepository.find({ owner });
+      const findMyCafe = await this.cafeRepository.find({ owner });
+      const findCafe = await this.cafeRepository.find({
+        where: {
+          owner: { id: Not(owner.id) },
+        },
+      });
       return {
         ok: true,
+        myCafes: findMyCafe,
         cafes: findCafe,
       };
     } catch (e) {
@@ -167,7 +173,7 @@ export class CafeService {
   async cafeDetail({ id }: CafeDetailInput): Promise<CafeDetailOutput> {
     try {
       const findCafe = await this.cafeRepository.findOne(id, {
-        relations: ['menus', 'reviews', 'likedUsers'],
+        relations: ['menus', 'reviews'],
       });
       if (!findCafe) {
         return this.commonService.errorMsg('존재하지 않는 카페 입니다.');

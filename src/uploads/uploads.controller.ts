@@ -31,7 +31,6 @@ export class UploadsController {
         })
         .promise();
       const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${objectName}`;
-      console.log(file);
       return { url };
     } catch (e) {
       console.log(e);

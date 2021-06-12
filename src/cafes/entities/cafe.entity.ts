@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
+  RelationId,
 } from 'typeorm';
 import { Address } from '../../common/entites/address.entity';
 import { IsNumber, IsString } from 'class-validator';
@@ -64,9 +65,13 @@ export class Cafe extends CoreEntity {
   @Field((type) => User)
   owner: User;
 
+  @RelationId((cafe: Cafe) => cafe.owner)
+  ownerId: number;
+
   @ManyToMany((type) => User, (user) => user.likeCafes, {
     nullable: true,
     onDelete: 'SET NULL',
+    eager: true,
   })
   @Field((type) => [User], { nullable: true })
   likedUsers?: User[];

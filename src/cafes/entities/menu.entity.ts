@@ -85,9 +85,9 @@ export class Menu extends CoreEntity {
   smallMenuImg?: string;
 
   @Column({ nullable: true })
-  @Field((type) => Int, { nullable: true })
+  @Field((type) => Int)
   @IsInt()
-  ownerId?: number;
+  ownerId: number;
 
   @Column({ type: 'enum', enum: Category })
   @Field((type) => Category)
