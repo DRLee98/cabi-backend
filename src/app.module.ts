@@ -34,10 +34,7 @@ import { Message } from './talk/entites/message.entity';
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'dev' ? '.dev.env' : '.prod.env',
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('dev', 'prod')
-          .valid('dev', 'prod', 'test')
-          .required(),
+        NODE_ENV: Joi.string().valid('dev', 'production', 'test').required(),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
@@ -47,6 +44,7 @@ import { Message } from './talk/entites/message.entity';
       }),
     }),
     GraphQLModule.forRoot({
+      playground: process.env.NODE_ENV !== 'production',
       autoSchemaFile: true,
       context: ({ req, connection }) => {
         if (req) {
