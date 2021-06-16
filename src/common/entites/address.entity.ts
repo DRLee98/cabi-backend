@@ -1,4 +1,4 @@
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Cafe } from 'src/cafes/entities/cafe.entity';
 import { CoreEntity } from 'src/common/entites/core.entity';
 import { User } from 'src/users/entites/user.entity';
@@ -32,12 +32,12 @@ export class Address extends CoreEntity {
   @Field((type) => String, { nullable: true })
   bname?: string;
 
-  @Column({ nullable: true })
-  @Field((type) => Int, { nullable: true })
+  @Column({ type: 'float', nullable: true })
+  @Field((type) => Float, { nullable: true })
   lat?: number;
 
-  @Column({ nullable: true })
-  @Field((type) => Int, { nullable: true })
+  @Column({ type: 'float', nullable: true })
+  @Field((type) => Float, { nullable: true })
   lng?: number;
 
   @OneToOne((type) => User, (user) => user.address, {

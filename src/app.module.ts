@@ -65,7 +65,9 @@ import { Message } from './talk/entites/message.entity';
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
           }),
-      ssl: { rejectUnauthorized: false },
+      ...(process.env.NODE_ENV === 'prod' && {
+        ssl: { rejectUnauthorized: false },
+      }),
       entities: [
         User,
         Address,
