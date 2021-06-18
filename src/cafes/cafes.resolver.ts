@@ -12,6 +12,10 @@ import {
   SearchCafesKeywordInput,
   SearchCafesKeywordOutput,
 } from './dtos/search-cafes-keyword.dto';
+import {
+  SearchCafesLatLngInput,
+  SearchCafesLatLngOutput,
+} from './dtos/search-cafes-latlng.dto';
 import { SearchCafesInput, SearchCafesOutput } from './dtos/search-cafes.dto';
 import { SeeCafeOutput } from './dtos/see-cafes.dto';
 import { Cafe } from './entities/cafe.entity';
@@ -87,5 +91,12 @@ export class CafeResolver {
     @Args('input') searchCafesKeywordInput: SearchCafesKeywordInput,
   ): Promise<SearchCafesKeywordOutput> {
     return this.cafeService.searchCafesKeyword(searchCafesKeywordInput);
+  }
+
+  @Query((returns) => SearchCafesLatLngOutput)
+  searchCafesLatLng(
+    @Args('input') searchCafesLatLngInput: SearchCafesLatLngInput,
+  ): Promise<SearchCafesLatLngOutput> {
+    return this.cafeService.searchCafesLatLng(searchCafesLatLngInput);
   }
 }

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
 import { Address } from 'src/common/entites/address.entity';
 import { User } from 'src/users/entites/user.entity';
-import { ILike, Not, Repository } from 'typeorm';
+import { Between, ILike, IsNull, Not, Repository } from 'typeorm';
 import { CafeDetailInput, CafeDetailOutput } from './dtos/cafe-detail.dto';
 import { CreateCafeInput, CreateCafeOutput } from './dtos/create-cafe.dto';
 import { DeleteCafeInput, DeleteCafeOutput } from './dtos/delete-cafe.dto';
@@ -14,6 +14,10 @@ import {
   SearchCafesKeywordInput,
   SearchCafesKeywordOutput,
 } from './dtos/search-cafes-keyword.dto';
+import {
+  SearchCafesLatLngInput,
+  SearchCafesLatLngOutput,
+} from './dtos/search-cafes-latlng.dto';
 import { SearchCafesInput, SearchCafesOutput } from './dtos/search-cafes.dto';
 import { SeeCafeOutput } from './dtos/see-cafes.dto';
 import { Cafe } from './entities/cafe.entity';
@@ -284,6 +288,34 @@ export class CafeService {
           relations: ['cafes'],
         },
       );
+      return {
+        ok: true,
+        cafes,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
+  async searchCafesLatLng({
+    top,
+    bottom,
+    left,
+    right,
+  }: SearchCafesLatLngInput): Promise<SearchCafesLatLngOutput> {
+    try {
+      const array = await this.addressRepository.find({
+        where: {
+          lat: Between(bottom, top),
+          lng: Between(left, right),
+          cafe: Not(IsNull()),
+        },
+        relations: ['cafe'],
+      });
+
+      const cafes = array.map((item) => item.cafe);
+
       return {
         ok: true,
         cafes,
