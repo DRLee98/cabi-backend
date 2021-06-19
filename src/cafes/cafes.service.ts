@@ -60,6 +60,20 @@ export class CafeService {
     return keywords;
   }
 
+  async deleteEmptyKeyword(id: number) {
+    const keyword = await this.keywordRepository.findOne(
+      { id },
+      {
+        relations: ['cafes'],
+      },
+    );
+    console.log(keyword);
+    if (keyword.cafes.length === 0) {
+      console.log(keyword, 'delete');
+      await this.keywordRepository.remove(keyword);
+    }
+  }
+
   //카페 생성
   async createCafe(
     owner: User,
@@ -256,6 +270,12 @@ export class CafeService {
         return this.commonService.errorMsg(validError);
       }
       await this.cafeRepository.remove(findCafe);
+
+      const keywords = findCafe.keywords;
+      keywords.forEach(async (keyword) => {
+        await this.deleteEmptyKeyword(keyword.id);
+      });
+
       return {
         ok: true,
       };
