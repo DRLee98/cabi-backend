@@ -7,6 +7,6 @@ export class ViewChatRoomInput extends PickType(ChatRoom, ['id']) {}
 
 @ObjectType()
 export class ViewChatRoomOutput extends CoreOutput {
-  @Field((type) => ChatRoom)
+  @Field((type) => ChatRoom, { nullable: true })
   chatRoom?: ChatRoom;
 }

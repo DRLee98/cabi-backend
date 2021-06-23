@@ -26,7 +26,7 @@ import {
   ViewChatRoomOutput,
 } from './dtos/view-chat-room.dto';
 import { ChatRoom } from './entites/chatRoom.entity';
-import { Message } from './entites/message.entity';
+import { Message, MessageType } from './entites/message.entity';
 
 @Injectable()
 export class TalkService {
@@ -45,6 +45,16 @@ export class TalkService {
     );
   }
 
+  async createSystemMessage(context: string, chatRoom: ChatRoom) {
+    await this.messageRepository.save(
+      this.messageRepository.create({
+        context,
+        chatRoom,
+        type: MessageType.System,
+      }),
+    );
+  }
+
   async createChatRoom(
     user: User,
     { secret, password }: CreateChatRoomInput,
@@ -56,13 +66,14 @@ export class TalkService {
         chatRoom.secret = secret;
         if (!password) {
           return this.commonService.errorMsg(
-            '비밀 채팅방 설정을 하려면 비밀번호를 입력해 주세요.',
+            '비밀 수다방 설정을 하려면 비밀번호를 입력해 주세요.',
           );
         }
         chatRoom.password = await this.commonService.hashPassword(password);
       }
 
       await this.chatRoomRepository.save(chatRoom);
+      await this.createSystemMessage('수다방이 생성되었습니다.', chatRoom);
 
       return {
         ok: true,
@@ -81,7 +92,7 @@ export class TalkService {
     try {
       const chatRoom = await this.chatRoomRepository.findOne({ id });
       if (!chatRoom) {
-        return this.commonService.errorMsg('존재하지 않는 채팅방 입니다.');
+        return this.commonService.errorMsg('존재하지 않는 수다방 입니다.');
       }
 
       if (chatRoom.secret) {
@@ -100,9 +111,13 @@ export class TalkService {
       if (!this.isEntrance(chatRoom, user)) {
         const users = [...chatRoom.users, user];
         chatRoom.users = users;
-      }
 
-      await this.chatRoomRepository.save(chatRoom);
+        await this.chatRoomRepository.save(chatRoom);
+        await this.createSystemMessage(
+          `${user.name}님이 입장하였습니다.`,
+          chatRoom,
+        );
+      }
 
       return {
         ok: true,
@@ -121,17 +136,25 @@ export class TalkService {
     try {
       const chatRoom = await this.chatRoomRepository.findOne({ id });
       if (!chatRoom) {
-        return this.commonService.errorMsg('존재하지 않는 채팅방 입니다.');
+        return this.commonService.errorMsg('존재하지 않는 수다방 입니다.');
       }
 
-      if (!this.isEntrance(chatRoom, user)) {
+      if (this.isEntrance(chatRoom, user)) {
         const users = chatRoom.users.filter(
           (chatUser) => chatUser.id !== user.id,
         );
         chatRoom.users = users;
-      }
 
-      await this.chatRoomRepository.save(chatRoom);
+        if (chatRoom.users.length === 0) {
+          await this.chatRoomRepository.remove(chatRoom);
+        } else {
+          await this.chatRoomRepository.save(chatRoom);
+          await this.createSystemMessage(
+            `${user.name}님이 퇴장하였습니다.`,
+            chatRoom,
+          );
+        }
+      }
 
       return {
         ok: true,
@@ -147,7 +170,20 @@ export class TalkService {
     { id }: ViewChatRoomInput,
   ): Promise<ViewChatRoomOutput> {
     try {
-      const chatRoom = await this.chatRoomRepository.findOne({ id });
+      const chatRoom = await this.chatRoomRepository.findOne(
+        { id },
+        { relations: ['messages'] },
+      );
+      if (!chatRoom) {
+        return this.commonService.errorMsg('존재하지 않는 수다방 입니다.');
+      }
+
+      if (!this.isEntrance(chatRoom, user)) {
+        return this.commonService.errorMsg(
+          '고객님이 참여 중인 수다방이 아닙니다.',
+        );
+      }
+
       return {
         ok: true,
         chatRoom,
@@ -168,17 +204,22 @@ export class TalkService {
       });
 
       if (!chatRoom) {
-        return this.commonService.errorMsg('존재하지 않는 채팅방 입니다.');
+        return this.commonService.errorMsg('존재하지 않는 수다방 입니다.');
       }
 
       if (!this.isEntrance(chatRoom, writer)) {
         return this.commonService.errorMsg(
-          '고객님이 참여 중인 채팅이 아닙니다.',
+          '고객님이 참여 중인 수다방이 아닙니다.',
         );
       }
 
       const message = await this.messageRepository.save(
-        this.messageRepository.create({ context, writer, chatRoom }),
+        this.messageRepository.create({
+          context,
+          writer,
+          chatRoom,
+          type: MessageType.User,
+        }),
       );
       await this.pubSub.publish(NEW_MESSAGE, { listenNewMessage: message });
       return {

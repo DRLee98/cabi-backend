@@ -18,7 +18,6 @@ export class ChatRoom extends CoreEntity {
   @OneToMany((type) => Message, (message) => message.chatRoom, {
     nullable: true,
     onDelete: 'SET NULL',
-    eager: true,
   })
   @Field((type) => [Message], { nullable: true })
   messages?: Message[];
