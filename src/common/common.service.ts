@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { User } from 'src/users/entites/user.entity';
 import { CoreOutput } from './dtos/output.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CommonService {
@@ -25,5 +26,23 @@ export class CommonService {
       console.log(e);
       return this.InternalServerErrorOutput;
     }
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    if (password) {
+      try {
+        return await bcrypt.hash(password, 10);
+      } catch (e) {
+        console.log(e);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+
+  async comparePassword(
+    verifyPassword: string,
+    password: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(verifyPassword, password);
   }
 }

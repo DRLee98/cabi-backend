@@ -46,11 +46,12 @@ import { Message } from './talk/entites/message.entity';
     GraphQLModule.forRoot({
       playground: process.env.NODE_ENV !== 'prod',
       autoSchemaFile: true,
+      installSubscriptionHandlers: true,
       context: ({ req, connection }) => {
         if (req) {
           return { token: req.headers['x-jwt'] };
         } else if (connection) {
-          console.log(connection);
+          return { token: connection.context['x-jwt'] };
         }
       },
     }),
