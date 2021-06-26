@@ -11,13 +11,17 @@ import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { JwtService } from 'src/jwt/jwt.service';
 import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
-import { DeleteAccountOutput } from './dtos/delete-account.dto';
+import {
+  DeleteAccountInput,
+  DeleteAccountOutput,
+} from './dtos/delete-account.dto';
 import { CommonService } from 'src/common/common.service';
 import {
   ToggleLikeCafeInput,
   ToggleLikeCafeOutput,
 } from './dtos/toggle-like-cafe.dto';
 import { Cafe } from 'src/cafes/entities/cafe.entity';
+import { UploadService } from 'src/uploads/uploads.service';
 
 @Injectable()
 export class UserService {
@@ -30,6 +34,7 @@ export class UserService {
     private readonly cafeRepository: Repository<Cafe>,
     private readonly jwtService: JwtService,
     private readonly commonService: CommonService,
+    private readonly uploadService: UploadService,
   ) {}
 
   async findById(id: number): Promise<User> {
@@ -140,11 +145,19 @@ export class UserService {
     }
   }
 
-  async deleteAccount(user: User): Promise<DeleteAccountOutput> {
+  async deleteAccount(
+    user: User,
+    { password }: DeleteAccountInput,
+  ): Promise<DeleteAccountOutput> {
     try {
       if (!user) {
         return this.commonService.errorMsg('존재하지 않는 유저입니다.');
       }
+      if (!user.comparePassword(password)) {
+        return this.commonService.errorMsg('비밀번호가 일치하지 않습니다.');
+      }
+      await this.uploadService.deleteFile(user.originalProfileImg);
+      await this.uploadService.deleteFile(user.smallProfileImg);
       await this.usersRepository.remove(user);
       return {
         ok: true,

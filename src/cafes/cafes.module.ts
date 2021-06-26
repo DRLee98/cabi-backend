@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
 import { Address } from 'src/common/entites/address.entity';
+import { UploadService } from 'src/uploads/uploads.service';
 import { CafeResolver } from './cafes.resolver';
 import { CafeService } from './cafes.service';
 import { Cafe } from './entities/cafe.entity';
@@ -37,6 +38,7 @@ import { ReviewService } from './reviews.service';
     MenuService,
     ReviewService,
     CommonService,
+    UploadService,
   ],
 })
 export class CafesModule {}

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
+import { UploadService } from 'src/uploads/uploads.service';
 import { User } from 'src/users/entites/user.entity';
 import { Repository } from 'typeorm';
 import { CafeService } from './cafes.service';
@@ -21,6 +22,7 @@ export class MenuService {
     private readonly nutrientRepository: Repository<Nutrient>,
     private readonly cafeService: CafeService,
     private readonly commonService: CommonService,
+    private readonly uploadService: UploadService,
   ) {}
 
   //메뉴 생성
@@ -162,6 +164,8 @@ export class MenuService {
       if (!validOk) {
         return this.commonService.errorMsg(validError);
       }
+      await this.uploadService.deleteFile(menu.originalMenuImg);
+      await this.uploadService.deleteFile(menu.smallMenuImg);
       await this.menuRepository.remove(menu);
       return {
         ok: true,

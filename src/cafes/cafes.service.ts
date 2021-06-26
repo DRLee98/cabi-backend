@@ -3,6 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommonService } from 'src/common/common.service';
 import { Address } from 'src/common/entites/address.entity';
+import { UploadService } from 'src/uploads/uploads.service';
 import { User } from 'src/users/entites/user.entity';
 import { Between, ILike, IsNull, Not, Repository } from 'typeorm';
 import { CafeDetailInput, CafeDetailOutput } from './dtos/cafe-detail.dto';
@@ -33,6 +34,7 @@ export class CafeService {
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,
     private readonly commonService: CommonService,
+    private readonly uploadService: UploadService,
   ) {}
 
   //키워드가 이미 있는지 찾아보고 없으면 생성
@@ -269,6 +271,8 @@ export class CafeService {
       if (!validOk) {
         return this.commonService.errorMsg(validError);
       }
+      await this.uploadService.deleteFile(findCafe.originalCoverImg);
+      await this.uploadService.deleteFile(findCafe.smallCoverImg);
       await this.cafeRepository.remove(findCafe);
 
       const keywords = findCafe.keywords;
