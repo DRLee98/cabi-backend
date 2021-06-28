@@ -311,7 +311,6 @@ export class TalkService {
             id: Equal(chatRoomId),
           },
         },
-        skip: 0,
         take: 1,
       });
 
