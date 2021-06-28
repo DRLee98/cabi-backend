@@ -12,7 +12,10 @@ import { ChatRoom } from '../entites/chatRoom.entity';
 @InputType()
 export class CreateChatRoomInput extends PartialType(
   PickType(ChatRoom, ['secret', 'password']),
-) {}
+) {
+  @Field((type) => String)
+  name: string;
+}
 
 @ObjectType()
 export class CreateChatRoomOutput extends CoreOutput {

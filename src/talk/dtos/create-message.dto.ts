@@ -9,4 +9,7 @@ export class CreateMessageInput extends PickType(Message, ['context']) {
 }
 
 @ObjectType()
-export class CreateMessageOutput extends CoreOutput {}
+export class CreateMessageOutput extends CoreOutput {
+  @Field((type) => Int, { nullable: true })
+  id?: number;
+}

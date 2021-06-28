@@ -24,7 +24,8 @@ export class UploadService {
           ACL: 'public-read',
         })
         .promise();
-      const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${objectName}`;
+      const encodeName = encodeURIComponent(objectName);
+      const url = `https://${BUCKET_NAME}.s3.amazonaws.com/${encodeName}`;
       return {
         ok: true,
         url,

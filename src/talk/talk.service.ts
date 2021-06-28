@@ -4,7 +4,7 @@ import { PubSub } from 'apollo-server-express';
 import { NEW_MESSAGE, PUB_SUB } from 'src/common/common.constants';
 import { CommonService } from 'src/common/common.service';
 import { User } from 'src/users/entites/user.entity';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import {
   CreateChatRoomInput,
   CreateChatRoomOutput,
@@ -22,9 +22,14 @@ import {
   ExitChatRoomOutput,
 } from './dtos/exit-chat-room.dto';
 import {
+  IsSecretChatRoomInput,
+  IsSecretChatRoomOutput,
+} from './dtos/is-secret-chat-room.dto';
+import {
   ViewChatRoomInput,
   ViewChatRoomOutput,
 } from './dtos/view-chat-room.dto';
+import { ViewChatRoomsOutput } from './dtos/view-chat-rooms.dto';
 import { ChatRoom } from './entites/chatRoom.entity';
 import { Message, MessageType } from './entites/message.entity';
 
@@ -45,22 +50,59 @@ export class TalkService {
     );
   }
 
+  getDay(dayNum: number): string {
+    switch (dayNum) {
+      case 0:
+        return '일요일';
+      case 1:
+        return '월요일';
+      case 2:
+        return '화요일';
+      case 3:
+        return '수요일';
+      case 4:
+        return '목요일';
+      case 5:
+        return '금요일';
+      case 6:
+        return '토요일';
+      default:
+        break;
+    }
+  }
+
   async createSystemMessage(context: string, chatRoom: ChatRoom) {
-    await this.messageRepository.save(
+    const message = await this.messageRepository.save(
       this.messageRepository.create({
         context,
         chatRoom,
         type: MessageType.System,
       }),
     );
+    await this.pubSub.publish(NEW_MESSAGE, { listenNewMessage: message });
+  }
+
+  async createDateSystemMessage(chatRoom: ChatRoom) {
+    const newDate = new Date();
+    const context = `${newDate.getFullYear()}년 ${
+      newDate.getMonth() + 1
+    }월 ${newDate.getDate()}일 ${this.getDay(newDate.getDay())}`;
+    const message = await this.messageRepository.save(
+      this.messageRepository.create({
+        context,
+        chatRoom,
+        type: MessageType.System,
+      }),
+    );
+    await this.pubSub.publish(NEW_MESSAGE, { listenNewMessage: message });
   }
 
   async createChatRoom(
     user: User,
-    { secret, password }: CreateChatRoomInput,
+    { secret, password, name }: CreateChatRoomInput,
   ): Promise<CreateChatRoomOutput> {
     try {
-      const chatRoom = this.chatRoomRepository.create({ users: [user] });
+      const chatRoom = this.chatRoomRepository.create({ users: [user], name });
 
       if (secret) {
         chatRoom.secret = secret;
@@ -194,6 +236,53 @@ export class TalkService {
     }
   }
 
+  async viewChatRooms(): Promise<ViewChatRoomsOutput> {
+    try {
+      const chatRooms = await this.chatRoomRepository.find();
+      return {
+        ok: true,
+        chatRooms,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
+  async isSecretChatRoom({
+    id,
+  }: IsSecretChatRoomInput): Promise<IsSecretChatRoomOutput> {
+    try {
+      const chatRoom = await this.chatRoomRepository.findOne({ id });
+      if (!chatRoom) {
+        return this.commonService.errorMsg('존재하지 않는 수다방 입니다.');
+      }
+
+      const isSecret = chatRoom.secret;
+
+      const lastMessage = await this.messageRepository.find({
+        order: {
+          createdAt: 'DESC',
+        },
+        where: {
+          chatRoom: {
+            id: Equal(id),
+          },
+        },
+        skip: 0,
+        take: 1,
+      });
+
+      return {
+        ok: true,
+        isSecret,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
   async createMessage(
     writer: User,
     { context, chatRoomId }: CreateMessageInput,
@@ -213,6 +302,26 @@ export class TalkService {
         );
       }
 
+      const lastMessage = await this.messageRepository.find({
+        order: {
+          createdAt: 'DESC',
+        },
+        where: {
+          chatRoom: {
+            id: Equal(chatRoomId),
+          },
+        },
+        skip: 0,
+        take: 1,
+      });
+
+      const lastMessageDate = lastMessage[0].createdAt.getDate();
+      const currentDate = new Date().getDate();
+
+      if (lastMessageDate !== currentDate) {
+        await this.createDateSystemMessage(chatRoom);
+      }
+
       const message = await this.messageRepository.save(
         this.messageRepository.create({
           context,
@@ -224,6 +333,7 @@ export class TalkService {
       await this.pubSub.publish(NEW_MESSAGE, { listenNewMessage: message });
       return {
         ok: true,
+        id: message.id,
       };
     } catch (e) {
       console.log(e);

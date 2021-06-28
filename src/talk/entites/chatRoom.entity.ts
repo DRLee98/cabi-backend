@@ -22,6 +22,10 @@ export class ChatRoom extends CoreEntity {
   @Field((type) => [Message], { nullable: true })
   messages?: Message[];
 
+  @Column()
+  @Field((type) => String)
+  name: string;
+
   @Column({ default: false })
   @Field((type) => Boolean, { defaultValue: false })
   secret?: boolean;

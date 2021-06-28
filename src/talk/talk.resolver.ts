@@ -21,11 +21,16 @@ import {
   ExitChatRoomInput,
   ExitChatRoomOutput,
 } from './dtos/exit-chat-room.dto';
+import {
+  IsSecretChatRoomInput,
+  IsSecretChatRoomOutput,
+} from './dtos/is-secret-chat-room.dto';
 import { ListenNewMessageInput } from './dtos/listen-new-message.dto';
 import {
   ViewChatRoomInput,
   ViewChatRoomOutput,
 } from './dtos/view-chat-room.dto';
+import { ViewChatRoomsOutput } from './dtos/view-chat-rooms.dto';
 import { ChatRoom } from './entites/chatRoom.entity';
 import { Message } from './entites/message.entity';
 import { TalkService } from './talk.service';
@@ -71,6 +76,20 @@ export class ChatRoomResolver {
     @Args('input') viewChatRoomInput: ViewChatRoomInput,
   ): Promise<ViewChatRoomOutput> {
     return this.talkService.viewChatRoom(user, viewChatRoomInput);
+  }
+
+  @Role(['Any'])
+  @Query((returns) => ViewChatRoomsOutput)
+  viewChatRooms(): Promise<ViewChatRoomsOutput> {
+    return this.talkService.viewChatRooms();
+  }
+
+  @Role(['Any'])
+  @Query((returns) => IsSecretChatRoomOutput)
+  isSecretChatRoom(
+    @Args('input') isSecretChatRoomInput: IsSecretChatRoomInput,
+  ): Promise<IsSecretChatRoomOutput> {
+    return this.talkService.isSecretChatRoom(isSecretChatRoomInput);
   }
 
   @Role(['Any'])
