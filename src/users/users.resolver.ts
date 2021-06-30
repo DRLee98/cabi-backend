@@ -8,6 +8,7 @@ import {
 import { DeleteAccountInput } from './dtos/delete-account.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
+import { MyChatRoomOutput } from './dtos/my-chat-room.dto';
 import {
   ToggleLikeCafeInput,
   ToggleLikeCafeOutput,
@@ -70,5 +71,11 @@ export class UserResolver {
     @Args('input') toggleLikeCafeInput: ToggleLikeCafeInput,
   ): Promise<ToggleLikeCafeOutput> {
     return this.usersService.toggleLikeCafe(user, toggleLikeCafeInput);
+  }
+
+  @Role(['Any'])
+  @Query((returns) => MyChatRoomOutput)
+  myChatRooms(@AuthUser() user: User): Promise<MyChatRoomOutput> {
+    return this.usersService.myChatRooms(user);
   }
 }

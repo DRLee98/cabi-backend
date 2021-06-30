@@ -1,7 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PubSub } from 'apollo-server-express';
-import { NEW_MESSAGE, PUB_SUB } from 'src/common/common.constants';
+import {
+  ENTRANCE_USER,
+  EXIT_USER,
+  NEW_MESSAGE,
+  PUB_SUB,
+} from 'src/common/common.constants';
 import { CommonService } from 'src/common/common.service';
 import { User } from 'src/users/entites/user.entity';
 import { Equal, Repository } from 'typeorm';
@@ -155,6 +160,9 @@ export class TalkService {
         chatRoom.users = users;
 
         await this.chatRoomRepository.save(chatRoom);
+        await this.pubSub.publish(ENTRANCE_USER, {
+          listenEntranceUser: { user, chatRoomId: chatRoom.id },
+        });
         await this.createSystemMessage(
           `${user.name}님이 입장하였습니다.`,
           chatRoom,
@@ -191,6 +199,9 @@ export class TalkService {
           await this.chatRoomRepository.remove(chatRoom);
         } else {
           await this.chatRoomRepository.save(chatRoom);
+          await this.pubSub.publish(EXIT_USER, {
+            listenExitUser: { user, chatRoomId: chatRoom.id },
+          });
           await this.createSystemMessage(
             `${user.name}님이 퇴장하였습니다.`,
             chatRoom,

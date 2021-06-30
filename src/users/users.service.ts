@@ -22,6 +22,7 @@ import {
 } from './dtos/toggle-like-cafe.dto';
 import { Cafe } from 'src/cafes/entities/cafe.entity';
 import { UploadService } from 'src/uploads/uploads.service';
+import { MyChatRoomOutput } from './dtos/my-chat-room.dto';
 
 @Injectable()
 export class UserService {
@@ -233,6 +234,25 @@ export class UserService {
       await this.usersRepository.save(relationUser);
       return {
         ok: true,
+      };
+    } catch (e) {
+      console.log(e);
+      return this.commonService.InternalServerErrorOutput;
+    }
+  }
+
+  async myChatRooms(user: User): Promise<MyChatRoomOutput> {
+    try {
+      const relationUser = await this.usersRepository.findOne(
+        { id: user.id },
+        {
+          relations: ['chatRooms'],
+        },
+      );
+      const chatRooms = relationUser.chatRooms;
+      return {
+        ok: true,
+        chatRooms,
       };
     } catch (e) {
       console.log(e);
