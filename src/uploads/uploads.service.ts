@@ -37,6 +37,12 @@ export class UploadService {
   }
 
   async deleteFile(url: string): Promise<DeleteFileOutput> {
+    AWS.config.update({
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_PRIVATE_KEY,
+      },
+    });
     try {
       if (url) {
         const Key = url.split(`${BUCKET_NAME}.s3.amazonaws.com/`)[1];

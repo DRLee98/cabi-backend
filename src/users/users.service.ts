@@ -154,11 +154,14 @@ export class UserService {
       if (!user) {
         return this.commonService.errorMsg('존재하지 않는 유저입니다.');
       }
-      if (!user.comparePassword(password)) {
+      const passwordCheck = await user.comparePassword(password);
+      if (!passwordCheck) {
         return this.commonService.errorMsg('비밀번호가 일치하지 않습니다.');
       }
-      await this.uploadService.deleteFile(user.originalProfileImg);
-      await this.uploadService.deleteFile(user.smallProfileImg);
+      if (user.originalProfileImg)
+        await this.uploadService.deleteFile(user.originalProfileImg);
+      if (user.smallProfileImg)
+        await this.uploadService.deleteFile(user.smallProfileImg);
       await this.usersRepository.remove(user);
       return {
         ok: true,

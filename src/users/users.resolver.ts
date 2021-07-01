@@ -5,7 +5,7 @@ import {
   CreateAccountInput,
   CreateAccountOutput,
 } from './dtos/create-account.dto';
-import { DeleteAccountInput } from './dtos/delete-account.dto';
+import { DeleteAccountInput, DeleteAccountOutput } from './dtos/delete-account.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { MyChatRoomOutput } from './dtos/my-chat-room.dto';
@@ -43,11 +43,11 @@ export class UserResolver {
   }
 
   @Role(['Any'])
-  @Mutation((returns) => EditProfileOutput)
+  @Mutation((returns) => DeleteAccountOutput)
   deleteAccount(
     @AuthUser() user: User,
     @Args('input') deleteAccountInput: DeleteAccountInput,
-  ): Promise<EditProfileOutput> {
+  ): Promise<DeleteAccountOutput> {
     return this.usersService.deleteAccount(user, deleteAccountInput);
   }
 
