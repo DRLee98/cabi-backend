@@ -1,4 +1,4 @@
-# Project Cabi Back-end
+# Project Cabi Back-end (https://cabi.netlify.app/)
 
 ## 프로젝트 소개
 
@@ -8,7 +8,7 @@
 
 ### 사용 기술
 
-- NestJS, TypeScript, PostgreSQL, TypeORM, GraphQL, AWS S3
+> NestJS, TypeScript, PostgreSQL, TypeORM, GraphQL, AWS S3
 
 ---
 
